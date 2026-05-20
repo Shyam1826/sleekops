@@ -25,6 +25,8 @@ import StatusBadge from '../components/ui/StatusBadge'
 import type { IngestionLog, KPIData, FeatureImportance, IngestionMetricPoint } from '../types'
 import { useState, useEffect } from 'react'
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
 function formatBytes(bytes: number): string {
   if (bytes > 1_000_000) return `${(bytes / 1_000_000).toFixed(1)} MB`
   return `${(bytes / 1_000).toFixed(0)} KB`
@@ -150,9 +152,9 @@ export default function Dashboard() {
 
   useEffect(() => {
     Promise.all([
-      fetch('http://localhost:3001/api/analytics/kpi').then(r => r.json()),
-      fetch('http://localhost:3001/api/analytics/ingestion-metrics').then(r => r.json()),
-      fetch('http://localhost:3001/api/analytics/risk-factors').then(r => r.json())
+      fetch(`${API_BASE_URL}/api/analytics/kpi`).then(r => r.json()),
+      fetch(`${API_BASE_URL}/api/analytics/ingestion-metrics`).then(r => r.json()),
+      fetch(`${API_BASE_URL}/api/analytics/risk-factors`).then(r => r.json())
     ])
       .then(([kpiData, metricsData, riskData]) => {
         setKpi(kpiData)

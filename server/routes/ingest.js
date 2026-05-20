@@ -9,7 +9,7 @@ const db = require('../db');
 const router = express.Router();
 
 // Ensure this matches your Python FastAPI port
-const FASTAPI_BASE = process.env.FASTAPI_URL || 'http://localhost:8000';
+const PYTHON_ENGINE_URL = process.env.PYTHON_ENGINE_URL || 'http://localhost:8000';
 
 /**
  * MULTER CONFIGURATION
@@ -79,7 +79,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     let mlResult;
     try {
       const { data } = await axios.post(
-        `${FASTAPI_BASE}/api/process-manifest`,
+        `${PYTHON_ENGINE_URL}/api/process-manifest`,
         form,
         {
           headers: { ...form.getHeaders() },

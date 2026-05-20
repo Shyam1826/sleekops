@@ -19,6 +19,8 @@ import {
 import PageHeader from '../components/ui/PageHeader'
 import type { PipelineStep, View } from '../types'
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
 type ProcessingState = 'idle' | 'uploading' | 'processing' | 'done' | 'error'
 
 const PIPELINE_STEPS: Omit<PipelineStep, 'status'>[] = [
@@ -73,7 +75,7 @@ export default function UploadHub({ onNavigate }: { onNavigate: (v: View) => voi
 
     let uploadData: any = null
     let hasError = false
-    const fetchPromise = fetch('http://localhost:3001/api/ingest/upload', {
+    const fetchPromise = fetch(`${API_BASE_URL}/api/ingest/upload`, {
       method: 'POST',
       body: formData,
     })

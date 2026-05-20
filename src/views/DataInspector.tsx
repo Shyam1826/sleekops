@@ -15,6 +15,8 @@ import {
 import PageHeader from '../components/ui/PageHeader'
 import StatusBadge from '../components/ui/StatusBadge'
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
 type SortDir = 'asc' | 'desc'
 
 const structureColors = {
@@ -167,7 +169,7 @@ export default function DataInspector() {
 
   useEffect(() => {
     setLoading(true);
-    fetch('http://localhost:3001/api/shipments')
+    fetch(`${API_BASE_URL}/api/shipments`)
       .then(res => {
         if (!res.ok) throw new Error(`Server responded with status ${res.status}`);
         return res.json();
@@ -190,7 +192,7 @@ export default function DataInspector() {
     if (!window.confirm('Are you sure you want to delete this shipment?')) return;
 
     try {
-      const res = await fetch(`http://localhost:3001/api/shipments/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/shipments/${id}`, {
         method: 'DELETE'
       });
       if (!res.ok) throw new Error(`Failed to delete shipment: ${res.statusText}`);

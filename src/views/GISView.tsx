@@ -21,6 +21,8 @@ import type { ShippingRoute, LogisticsHub } from '../types'
 // 🚨 CRITICAL: Include Leaflet's core styles or the map structure breaks!
 import 'leaflet/dist/leaflet.css'
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
 const routeColors = {
   on_time: '#10b981',
   minor_delay: '#f59e0b',
@@ -163,7 +165,7 @@ export default function GISView() {
 
   useEffect(() => {
     setLoading(true)
-    fetch('http://localhost:3001/api/shipments?limit=100')
+    fetch(`${API_BASE_URL}/api/shipments?limit=100`)
       .then(res => res.json())
       .then(data => {
         const liveRoutes = (data.data || []).map((row: any) => {
