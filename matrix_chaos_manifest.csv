@@ -1,0 +1,23 @@
+Core Shipment Indicators,,Routing Vectors,,Physical Specifications,Predictive Analytics,System Metrics
+Tracking Identification,,Hub Locations,,Cargo Details,Disruption Metrics,Tracking State
+ID,Type,Source Terminal,Target Terminal,Commodity,Expected Hours,Condition
+SHP-3001,Electronics,MUM_HUB,DEL_HUB,Transistors,1.5,processing
+SHP-3002,Machinery,DEL_HUB,BLR_HUB,Turbines,4,Processing
+SHP-3003,Chemicals,BLR_HUB,HYD_HUB,Peroxide,26,failed
+SHP-3004,Apparel,HYD_HUB,MAA_HUB,Shirts,0,delivered
+SHP-3005,Food,MAA_HUB,MUM_HUB,Grain,2.5,in_transit
+SHP-3006,Electronics,MUM_HUB,BLR_HUB,Displays,7.5,minor_delay
+SHP-3007,Machinery,DEL_HUB,HYD_HUB,Generators,,high_delay
+SHP-3008,Chemicals,BLR_HUB,MAA_HUB,Polymers,48,delayed
+SHP-3009,,HYD_HUB,MUM_HUB,,0.5,success
+SHP-3010,Food,MAA_HUB,DEL_HUB,Produce,185.3,queued
+SHP-3011,Apparel,BLR_HUB,DEL_HUB,Denim,11.5,minor_delay
+SHP-3012,Electronics,MUM_HUB,HYD_HUB,Chips,0,Success
+SHP-3013,Machinery,DEL_HUB,MAA_HUB,Engines,72,failed
+SHP-3014,,HYD_HUB,BLR_HUB,,2,processing
+SHP-3015,Chemicals,MAA_HUB,MUM_HUB,Acids,,repaired
+SHP-3001,Electronics,MUM_HUB,DEL_HUB,Transistors,1.5,processing
+SHP-3016,Food,DEL_HUB,MUM_HUB,Poultry,5,minor_delay
+SHP-3017,Apparel,BLR_HUB,MAA_HUB,Footwear,18,high_delay
+SHP-3018,Electronics,HYD_HUB,DEL_HUB,Sensors,0.2,in_transit
+SHP-3019,Machinery,MAA_HUB,BLR_HUB,Pumps,30,failed

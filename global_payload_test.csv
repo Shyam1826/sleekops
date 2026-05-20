@@ -1,0 +1,7 @@
+uid,origin_terminal,target_terminal,cargo_class,m3_vol,disruption_index,tracking_state
+SHP-9001,SIN_TERMINAL,DXB_GATEWAY,Medical Supplies,14.5,0,active
+SHP-9002,DXB_GATEWAY,LHR_HUB,Automotive parts,82.0,1.2,delayed
+SHP-9003,LHR_HUB,JFK_TERMINAL,Perishables,8.2,4.5,critical
+SHP-9004,JFK_TERMINAL,SIN_TERMINAL,High-Tech Electronics,3.1,0,completed
+SHP-9005,SIN_TERMINAL,LHR_HUB,Industrial Equipment,112.4,0.8,active
+SHP-9006,DXB_GATEWAY,JFK_TERMINAL,Consumer Goods,22.0,0,completed

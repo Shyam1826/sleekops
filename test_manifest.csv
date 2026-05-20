@@ -1,0 +1,6 @@
+shipment_id,origin_hub,destination_hub,material_type,weight_kg,predicted_delay_hours,status
+SHP-1001,New York,Los Angeles,Electronics,250.5,12.5,processing
+SHP-1002,Chicago,Houston,Machinery,1200,4,in_transit
+SHP-1003,Miami,Seattle,Apparel,45.2,0,delivered
+SHP-1004,Dallas,Denver,Chemicals,850.7,24,delayed
+SHP-1005,Atlanta,Boston,Food,150,2.5,processing
