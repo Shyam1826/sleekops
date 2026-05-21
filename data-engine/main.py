@@ -6,27 +6,44 @@ import io
 import sys
 import os
 
-# 🛠️ PERMANENT PRODUCTION GLOBAL ROOT ALIGNMENT
-current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(current_dir, '..'))
+# ─────────────────────────────────────────────────────────────────────────────
+# PRODUCTION MODULE RESOLUTION — Linux / Case-Sensitive Filesystem Safe
+#
+# When launched from the repository root with:
+#   uvicorn data-engine.main:app --host 0.0.0.0 --port 10000
+#
+# Python sets __file__ to:
+#   <repo_root>/data-engine/main.py
+#
+# We resolve the absolute repo root dynamically (never hardcoded) and
+# force-inject it at sys.path[0] so that the package hierarchy:
+#   <repo_root>/adaptive_reconstruction_engine/__init__.py
+#   <repo_root>/adaptive_reconstruction_engine/src/__init__.py
+#   <repo_root>/adaptive_reconstruction_engine/src/engine.py
+# is always resolved correctly regardless of the working directory or
+# the platform's case sensitivity rules.
+# ─────────────────────────────────────────────────────────────────────────────
 
-# Explicitly calculate the absolute source location of your ML script files
-ml_src_path = os.path.join(project_root, 'adaptive_reconstruction_engine', 'src')
+# Step 1: Resolve the absolute path of this file, then walk one level up
+#         to reach the repository root (i.e. the directory that CONTAINS
+#         'data-engine/' and 'adaptive_reconstruction_engine/').
+_THIS_FILE   = os.path.abspath(__file__)          # …/data-engine/main.py
+_DATA_ENGINE = os.path.dirname(_THIS_FILE)         # …/data-engine
+_REPO_ROOT   = os.path.dirname(_DATA_ENGINE)       # …/<repo_root>
 
-# Force-inject both paths right into the front of the Python module cache
-if ml_src_path not in sys.path:
-    sys.path.insert(0, ml_src_path)
-if project_root not in sys.path:
-    sys.path.insert(1, project_root)
+# Step 2: Inject the repo root at the front of sys.path so Python resolves
+#         top-level packages (like adaptive_reconstruction_engine) from there
+#         before any site-packages or virtualenv directories.
+if _REPO_ROOT not in sys.path:
+    sys.path.insert(0, _REPO_ROOT)
 
-# Safe fallback import sequence handling both root-relative and package layout bounds
-try:
-    from engine import AdaptiveReconstructionEngine
-except ModuleNotFoundError:
-    from adaptive_reconstruction_engine.src.engine import AdaptiveReconstructionEngine
+# Step 3: Single, unambiguous absolute import — no try/except fallback needed.
+#         Requires __init__.py in both:
+#           adaptive_reconstruction_engine/
+#           adaptive_reconstruction_engine/src/
+from adaptive_reconstruction_engine.src.engine import AdaptiveReconstructionEngine
 
 app = FastAPI(title="SleekOps Adaptive Data Engine API")
-# ... Rest of your code continues perfectly below ...
 
 app.add_middleware(
     CORSMiddleware,
