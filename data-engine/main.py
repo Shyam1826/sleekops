@@ -6,31 +6,15 @@ import io
 import sys
 import os
 
-# 🛠️ PERMANENT GLOBAL PATH MAP ROUTING
-current_file_path = os.path.abspath(__file__)
-data_engine_dir = os.path.dirname(current_file_path)
-project_root_dir = os.path.abspath(os.path.join(data_engine_dir, '..'))
+# 🛠️ PERMANENT CLOUD LINUX ENTRY-POINT ALIGNMENT
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.abspath(os.path.join(current_dir, '..'))
 
-# Locate the machine learning module dynamically by layout contents
-ml_folder_name = "adaptive_reconstruction_engine"
-if os.path.exists(project_root_dir):
-    for entry in os.listdir(project_root_dir):
-        if 'reconstruction' in entry.lower() and 'engine' in entry.lower():
-            ml_folder_name = entry
-            break
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 
-ml_src_absolute_path = os.path.join(project_root_dir, ml_folder_name, 'src')
-
-# High-priority path routing insertion
-if ml_src_absolute_path not in sys.path:
-    sys.path.insert(0, ml_src_absolute_path)
-if project_root_dir not in sys.path:
-    sys.path.insert(1, project_root_dir)
-if data_engine_dir not in sys.path:
-    sys.path.insert(2, data_engine_dir)
-
-# Absolute structural import pass execution
-from engine import AdaptiveReconstructionEngine
+# Direct, explicit path import bypassing all namespace collisions
+from adaptive_reconstruction_engine.src.engine import AdaptiveReconstructionEngine
 
 app = FastAPI(title="SleekOps Adaptive Data Engine API")
 
