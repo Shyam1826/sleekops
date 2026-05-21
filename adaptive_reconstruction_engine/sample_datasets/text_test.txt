@@ -1,0 +1,15 @@
+student_id	age	gender	gaming_hours	study_hours			sleep_hours	attendance
+gaming_genre	social_activity	device_usage						
+reaction_time_ms	addiction_score	stress_level	grades					
+8	23	Female	4.78	6.79			5.37	66.46
+FPS	2.85	9.96						
+271.21	11.75	Medium	62.11					
+9	20	Female	4.55	7.93			8.76	72.5
+FPS	1	9.48						
+272.39	11.04	Medium	80.94					
+10	19	Male	0.29	4.24			7.83	71.39
+Casual	3.07	5.39						
+318.59	4.72	Medium	82.3492355					
+11	23	Female	4.11	2.61			8.93	61.95
+RPG	1.04	5.4						
+273.33	10.57	Medium	52.31					
