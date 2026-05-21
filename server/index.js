@@ -21,6 +21,7 @@ require('dotenv').config({ path: path.join(__dirname, '../.env') })
 const ingestRouter = require('./routes/ingest')
 const shipmentsRouter = require('./routes/shipments')
 const analyticsRouter = require('./routes/analytics')
+const authRouter = require('./routes/auth') // 🔑 1. IMPORT YOUR NEW AUTH BRIDGING ROUTER
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -54,6 +55,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use('/api/ingest', ingestRouter)
 app.use('/api/shipments', shipmentsRouter)
 app.use('/api/analytics', analyticsRouter)
+app.use('/api/auth', authRouter) // 🔑 2. MOUNT THE AUTH MODULE PIPELINE TO /api/auth
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', version: '2.4.1', service: 'retrace-api' })

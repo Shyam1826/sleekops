@@ -10,7 +10,9 @@
     "dev:all": "concurrently \"npm run dev\" \"npm run dev --prefix server\" \"cd data-engine && .\\venv\\Scripts\\python -m uvicorn main:app --reload\""
   },
   "dependencies": {
+    "@react-oauth/google": "^0.13.5",
     "@supabase/supabase-js": "^2.39.0",
+    "axios": "^1.16.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.344.0",
     "react": "^18.2.0",

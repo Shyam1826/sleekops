@@ -147,3 +147,35 @@
 .leaflet-top, .leaflet-bottom {
   z-index: 2 !important;
 }
+
+@theme {
+  --color-background-obsidian: #090A0F;
+  --color-surface-card: #141722;
+  --color-surface-elevated: #1D2232;
+  --color-accent-cyberblue: #38BDF8;
+  --color-accent-emerald: #10B981;
+  --color-text-primary: #F3F4F6;
+  --color-text-muted: #9CA3AF;
+  --color-border-glass: rgba(255, 255, 255, 0.06);
+}
+
+body {
+  background-color: #090A0F;
+  color: #F3F4F6;
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Premium frosted glassmorphism helper */
+.glass-panel {
+  background: rgba(20, 23, 34, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* Custom monospace layout for data hashes and tracking IDs */
+.font-mono-data {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  letter-spacing: -0.025em;
+}
