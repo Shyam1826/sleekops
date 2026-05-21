@@ -21,7 +21,20 @@ if project_root not in sys.path:
 try:
     from engine import AdaptiveReconstructionEngine
 except ModuleNotFoundError:
-    from adaptive_reconstruction_engine.src.engine import AdaptiveReconstructionEngine
+    try:
+        from adaptive_reconstruction_engine.src.engine import AdaptiveReconstructionEngine
+    except ModuleNotFoundError:
+        # Diagnostic fallback if folder name uses alternative capitalization on disk
+        target_folder = "adaptive_reconstruction_engine"
+        if os.path.exists(project_root):
+            for item in os.listdir(project_root):
+                if 'reconstruction' in item.lower() and 'engine' in item.lower():
+                    target_folder = item
+                    break
+        import importlib
+        mod = importlib.import_module(f"{target_folder}.src.engine")
+        AdaptiveReconstructionEngine = mod.AdaptiveReconstructionEngine
+
 app = FastAPI(title="SleekOps Adaptive Data Engine API")
 
 app.add_middleware(
@@ -256,4 +269,4 @@ async def process_manifest(file: UploadFile = File(...)):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=10000)
