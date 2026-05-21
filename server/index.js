@@ -7,8 +7,8 @@
  * adaptive ML reconstruction pipeline.
  *
  * Architecture:
- *   React UI  ──►  Express (this server, :3001)  ──►  FastAPI ML Service (:8000)
- *                                                  └►  PostgreSQL DB
+ * React UI  ──►  Express (this server, :3001)  ──►  FastAPI ML Service (:8000)
+ * └►  PostgreSQL DB
  */
 
 const express = require('express')
@@ -25,7 +25,28 @@ const analyticsRouter = require('./routes/analytics')
 const app = express()
 const PORT = process.env.PORT || 3001
 
-app.use(cors({ origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173' }))
+// 🛡️ DYNAMIC PRODUCTION CORS INTEGRATION
+const allowedOrigins = [
+  'http://localhost:5173',          // Local Vite Development Environment
+  'https://sleekops.vercel.app'     // Live Production Frontend Workspace
+]
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow server-to-server or tools like Postman (which have an undefined origin)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}))
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -39,7 +60,7 @@ app.get('/api/health', (req, res) => {
 })
 
 app.listen(PORT, () => {
-  console.log(`[Retrace API] Listening on http://localhost:${PORT}`)
+  console.log(`[Retrace API] Listening on port ${PORT}`)
 })
 
 module.exports = app
