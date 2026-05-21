@@ -6,13 +6,22 @@ import io
 import sys
 import os
 
-# Add the reconstruction engine directory to the python path
-engine_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'adaptive_reconstruction_engine'))
-if engine_path not in sys.path:
-    sys.path.append(engine_path)
+## 🛠️ DYNAMIC ENVIRONMENT-AGNOSTIC ABSOLUTE MODULE RESOLUTION
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.abspath(os.path.join(current_dir, '..'))
+engine_src_path = os.path.join(project_root, 'adaptive_reconstruction_engine', 'src')
 
-from src.engine import AdaptiveReconstructionEngine
+# Insert paths at the front of sys.path to guarantee import priority over Render system defaults
+if engine_src_path not in sys.path:
+    sys.path.insert(0, engine_src_path)
+if project_root not in sys.path:
+    sys.path.insert(1, project_root)
 
+# Attempt absolute module loading, fallback to repo-relative paths if namespaces collide
+try:
+    from engine import AdaptiveReconstructionEngine
+except ModuleNotFoundError:
+    from adaptive_reconstruction_engine.src.engine import AdaptiveReconstructionEngine
 app = FastAPI(title="SleekOps Adaptive Data Engine API")
 
 app.add_middleware(
