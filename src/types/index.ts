@@ -1,5 +1,13 @@
 export type View = 'dashboard' | 'upload' | 'inspector' | 'gis' | 'alerts' | 'settings' | 'documentation'
 
+// 🔑 Update this interface block right inside your types file
+export interface SidebarProps {
+  currentView: View
+  onNavigate: (view: View) => void
+  user: any        // ⚡ Added to inject Google Profile state records
+  onLogout: () => void // ⚡ Added to link the session termination hook
+}
+
 export interface KPIData {
   totalShipments: number
   anomaliesRepaired: number
