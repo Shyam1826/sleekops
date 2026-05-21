@@ -6,17 +6,27 @@ import io
 import sys
 import os
 
-# 🛠️ PERMANENT CLOUD LINUX ENTRY-POINT ALIGNMENT
+# 🛠️ PERMANENT PRODUCTION GLOBAL ROOT ALIGNMENT
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, '..'))
 
-if project_root not in sys.path:
-    sys.path.insert(0, project_root)
+# Explicitly calculate the absolute source location of your ML script files
+ml_src_path = os.path.join(project_root, 'adaptive_reconstruction_engine', 'src')
 
-# Direct, explicit path import bypassing all namespace collisions
-from adaptive_reconstruction_engine.src.engine import AdaptiveReconstructionEngine
+# Force-inject both paths right into the front of the Python module cache
+if ml_src_path not in sys.path:
+    sys.path.insert(0, ml_src_path)
+if project_root not in sys.path:
+    sys.path.insert(1, project_root)
+
+# Safe fallback import sequence handling both root-relative and package layout bounds
+try:
+    from engine import AdaptiveReconstructionEngine
+except ModuleNotFoundError:
+    from adaptive_reconstruction_engine.src.engine import AdaptiveReconstructionEngine
 
 app = FastAPI(title="SleekOps Adaptive Data Engine API")
+# ... Rest of your code continues perfectly below ...
 
 app.add_middleware(
     CORSMiddleware,
