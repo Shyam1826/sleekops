@@ -6,27 +6,30 @@ import io
 import sys
 import os
 
-## 🛠️ DYNAMIC ENVIRONMENT-AGNOSTIC ABSOLUTE MODULE RESOLUTION
-current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(current_dir, '..'))
+# 🛠️ PERMANENT GLOBAL PATH MAP ROUTING
+current_file_path = os.path.abspath(__file__)
+data_engine_dir = os.path.dirname(current_file_path)
+project_root_dir = os.path.abspath(os.path.join(data_engine_dir, '..'))
 
-# Explicitly identify the machine learning folder regardless of case sensitivity
-target_folder = "adaptive_reconstruction_engine"
-if os.path.exists(project_root):
-    for item in os.listdir(project_root):
-        if 'reconstruction' in item.lower() and 'engine' in item.lower():
-            target_folder = item
+# Locate the machine learning module dynamically by layout contents
+ml_folder_name = "adaptive_reconstruction_engine"
+if os.path.exists(project_root_dir):
+    for entry in os.listdir(project_root_dir):
+        if 'reconstruction' in entry.lower() and 'engine' in entry.lower():
+            ml_folder_name = entry
             break
 
-engine_src_path = os.path.join(project_root, target_folder, 'src')
+ml_src_absolute_path = os.path.join(project_root_dir, ml_folder_name, 'src')
 
-# Force injection into the front of python's lookups so it skips Render defaults
-if engine_src_path not in sys.path:
-    sys.path.insert(0, engine_src_path)
-if project_root not in sys.path:
-    sys.path.insert(1, project_root)
+# High-priority path routing insertion
+if ml_src_absolute_path not in sys.path:
+    sys.path.insert(0, ml_src_absolute_path)
+if project_root_dir not in sys.path:
+    sys.path.insert(1, project_root_dir)
+if data_engine_dir not in sys.path:
+    sys.path.insert(2, data_engine_dir)
 
-# Direct local module resolution
+# Absolute structural import pass execution
 from engine import AdaptiveReconstructionEngine
 
 app = FastAPI(title="SleekOps Adaptive Data Engine API")
