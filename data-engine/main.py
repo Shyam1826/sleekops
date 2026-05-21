@@ -9,31 +9,25 @@ import os
 ## 🛠️ DYNAMIC ENVIRONMENT-AGNOSTIC ABSOLUTE MODULE RESOLUTION
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, '..'))
-engine_src_path = os.path.join(project_root, 'adaptive_reconstruction_engine', 'src')
 
-# Insert paths at the front of sys.path to guarantee import priority over Render system defaults
+# Explicitly identify the machine learning folder regardless of case sensitivity
+target_folder = "adaptive_reconstruction_engine"
+if os.path.exists(project_root):
+    for item in os.listdir(project_root):
+        if 'reconstruction' in item.lower() and 'engine' in item.lower():
+            target_folder = item
+            break
+
+engine_src_path = os.path.join(project_root, target_folder, 'src')
+
+# Force injection into the front of python's lookups so it skips Render defaults
 if engine_src_path not in sys.path:
     sys.path.insert(0, engine_src_path)
 if project_root not in sys.path:
     sys.path.insert(1, project_root)
 
-# Attempt absolute module loading, fallback to repo-relative paths if namespaces collide
-try:
-    from engine import AdaptiveReconstructionEngine
-except ModuleNotFoundError:
-    try:
-        from adaptive_reconstruction_engine.src.engine import AdaptiveReconstructionEngine
-    except ModuleNotFoundError:
-        # Diagnostic fallback if folder name uses alternative capitalization on disk
-        target_folder = "adaptive_reconstruction_engine"
-        if os.path.exists(project_root):
-            for item in os.listdir(project_root):
-                if 'reconstruction' in item.lower() and 'engine' in item.lower():
-                    target_folder = item
-                    break
-        import importlib
-        mod = importlib.import_module(f"{target_folder}.src.engine")
-        AdaptiveReconstructionEngine = mod.AdaptiveReconstructionEngine
+# Direct local module resolution
+from engine import AdaptiveReconstructionEngine
 
 app = FastAPI(title="SleekOps Adaptive Data Engine API")
 
