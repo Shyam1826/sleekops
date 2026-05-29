@@ -55,7 +55,7 @@ export const Login: React.FC<LoginProps> = ({ onAuthSuccess }) => {
           <GoogleLogin
             onSuccess={handleSuccess}
             onError={() => console.error('[Auth Hook] Google Login Interrupted')}
-            theme="filled_dark"
+            theme="filled_black"
             shape="rectangular"
             size="large"
           />
