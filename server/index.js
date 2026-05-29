@@ -29,6 +29,7 @@ const PORT = process.env.PORT || 3001
 // 🛡️ DYNAMIC PRODUCTION CORS INTEGRATION
 const allowedOrigins = [
   'http://localhost:5173',          // Local Vite Development Environment
+  'http://127.0.0.1:5173',
   'https://sleekops.vercel.app'     // Live Production Frontend Workspace
 ]
 
