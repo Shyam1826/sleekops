@@ -1,11 +1,11 @@
 /**
  * GET /api/shipments
  * Returns reconstructed, cleaned shipment records from the database.
- * Completely adapted for optimized direct SQLite object mapping arrays.
+ * Completely adapted to dynamically support both SQLite and Cloud PostgreSQL architecture.
  */
 
 const express = require('express')
-const db = require('../db')
+const db = require('../db') // Pointing to our universal cross-platform db.query bridge
 
 const router = express.Router()
 
@@ -19,55 +19,67 @@ router.get('/', async (req, res) => {
   const conditions = []
   const params = []
 
+  // ⚡ Dynamic Parameter Formatting matrix transforms indices cleanly across runtimes
   if (status) {
     params.push(status)
-    conditions.push(`rs.status = ?`)
+    conditions.push(`rs.status = $${params.length}`)
   }
 
   if (q) {
-    params.push(`%${q}%`, `%${q}%`)
-    conditions.push(`(rs.shipment_id LIKE ? OR v.name LIKE ?)`)
+    params.push(`%${q}%`)
+    const firstIndex = params.length
+    params.push(`%${q}%`)
+    const secondIndex = params.length
+    conditions.push(`(rs.shipment_id LIKE $${firstIndex} OR v.name LIKE $${secondIndex})`)
   }
 
   if (ingestion_log) {
     params.push(ingestion_log)
-    conditions.push(`rs.ingestion_log_id = ?`)
+    conditions.push(`rs.ingestion_log_id = $${params.length}`)
   }
 
   const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''
 
   try {
-    // 1. Get total records count using our direct promisified db.get wrapper object
-    const countResult = await db.get(
-      `SELECT COUNT(*) AS count FROM reconstructed_shipments rs
-       LEFT JOIN vendors v ON v.id = rs.vendor_id
-       ${where}`,
-      params
-    )
-
-    // Read properties directly off the returned row object instead of using .rows[0]
-    const total = countResult ? parseInt(countResult.count, 10) : 0
+    // 1. Get total records count using our dynamic db.query bridge interface
+    // Params are built using $1, $2 structure. Our db.js translation shim converts it to ? automatically on SQLite!
+    const countQuery = `
+      SELECT COUNT(*) AS count FROM reconstructed_shipments rs
+      LEFT JOIN vendors v ON v.id = rs.vendor_id
+      ${where}
+    `;
+    const countResult = await db.query(countQuery, params);
+    
+    // Account for engine variance: Postgres returns a tracking grid inside .rows object array
+    const rawCountRow = countResult.rows ? countResult.rows[0] : (countResult[0] || { count: 0 });
+    const total = rawCountRow ? parseInt(rawCountRow.count, 10) : 0;
 
     // 2. Fetch the paginated rows data array
-    const limitAndOffsetParams = [...params, limitNum, offset]
-    const dataResult = await db.all(
-      `SELECT
-         rs.*,
-         v.name AS vendor_name,
-         'Tier 1' AS vendor_tier,          -- Safe fallback literal
-         'Global' AS vendor_country,        -- Safe fallback literal
-         95.0 AS vendor_reliability_score   -- Safe fallback literal
-       FROM reconstructed_shipments rs
-       LEFT JOIN vendors v ON v.id = rs.vendor_id
-       ${where}
-       ORDER BY rs.id DESC
-       LIMIT ? OFFSET ?`,
-      limitAndOffsetParams
-    )
+    params.push(limitNum);
+    const limitIndex = params.length;
+    params.push(offset);
+    const offsetIndex = params.length;
 
-    // Safely send the direct raw dataResult array to the frontend
+    const dataQuery = `
+      SELECT
+        rs.*,
+        v.name AS vendor_name,
+        'Tier 1' AS vendor_tier,
+        'Global' AS vendor_country,
+        95.0 AS vendor_reliability_score
+      FROM reconstructed_shipments rs
+      LEFT JOIN vendors v ON v.id = rs.vendor_id
+      ${where}
+      ORDER BY rs.id DESC
+      LIMIT $${limitIndex} OFFSET $${offsetIndex}
+    `;
+
+    const dataResult = await db.query(dataQuery, params);
+    const shipmentsArray = dataResult.rows || dataResult;
+
+    // Safely send the unified output mapping array down to the UI grid views
     res.json({ 
-      data: dataResult, 
+      data: shipmentsArray, 
       pagination: { 
         total, 
         page: pageNum, 
@@ -83,26 +95,28 @@ router.get('/', async (req, res) => {
 
 /**
  * GET /api/shipments/:id
- * Returns a single reconstructed shipment using direct object checking
+ * Returns a single reconstructed shipment matching specific parameter identifiers
  */
 router.get('/:id', async (req, res) => {
   try {
-    const result = await db.all(
+    const result = await db.query(
       `SELECT 
-         rs.*, 
-         v.name AS vendor_name, 
-         'Tier 1' AS vendor_tier, 
-         'Global' AS vendor_country,
-         95.0 AS vendor_reliability_score
+          rs.*, 
+          v.name AS vendor_name, 
+          'Tier 1' AS vendor_tier, 
+          'Global' AS vendor_country,
+          95.0 AS vendor_reliability_score
        FROM reconstructed_shipments rs
        LEFT JOIN vendors v ON v.id = rs.vendor_id
-       WHERE rs.shipment_id = ?`,
+       WHERE rs.shipment_id = $1`,
       [req.params.id]
     )
-    if (!result || !result.length) {
+    
+    const rows = result.rows || result;
+    if (!rows || !rows.length) {
       return res.status(404).json({ error: 'Shipment record not found.' })
     }
-    res.json(result[0])
+    res.json(rows[0])
   } catch (err) {
     console.error('[Shipment ID Fetch Error]:', err.message)
     res.status(500).json({ error: err.message })
@@ -111,15 +125,16 @@ router.get('/:id', async (req, res) => {
 
 /**
  * DELETE /api/shipments/:id
- * Delete a specific reconstructed shipment from local SQLite database
+ * Removes a specific tracking entity line from active ledger registers
  */
 router.delete('/:id', async (req, res) => {
   try {
-    await db.run('DELETE FROM reconstructed_shipments WHERE id = ?', [req.params.id]);
+    await db.query('DELETE FROM reconstructed_shipments WHERE id = $1', [req.params.id]);
     res.json({ success: true });
   } catch (err) {
+    console.error('[Shipment Deletion Error]:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
 
-module.exports = router
+module.exports = router;
