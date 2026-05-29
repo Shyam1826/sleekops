@@ -116,7 +116,22 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       'DEL_HUB': { lat: 28.7041, lng: 77.1025 },
       'BLR_HUB': { lat: 12.9716, lng: 77.5946 },
       'HYD_HUB': { lat: 17.3850, lng: 78.4867 },
-      'MAA_HUB': { lat: 13.0827, lng: 80.2707 }
+      'MAA_HUB': { lat: 13.0827, lng: 80.2707 },
+      'ATLANTA':       { lat: 33.7490, lng: -84.3880 },
+      'BOSTON':        { lat: 42.3601, lng: -71.0589 },
+      'DALLAS':        { lat: 32.7767, lng: -96.7970 },
+      'DENVER':        { lat: 39.7392, lng: -104.9903 },
+      'MIAMI':         { lat: 25.7617, lng: -80.1918 },
+      'SEATTLE':       { lat: 47.6062, lng: -122.3321 },
+      'HOUSTON':       { lat: 29.7604, lng: -95.3698 },
+      'CHICAGO':       { lat: 41.8781, lng: -87.6298 },
+      'NEW YORK':      { lat: 40.7128, lng: -74.0060 },
+      'LOS ANGELES':   { lat: 34.0522, lng: -118.2437 },
+      // --- Hub & Gateway Terminals ---
+      'SIN_TERMINAL':  { lat: 1.3521,  lng: 103.8198 }, // Singapore
+      'LHR_HUB':       { lat: 51.4700, lng: -0.4543 },  // London Heathrow
+      'JFK_TERMINAL':  { lat: 40.6413, lng: -73.7781 }, // New York JFK
+      'DXB_GATEWAY':   { lat: 25.2532, lng: 55.3657 }   // Dubai International
     };
 
     if (cleanRecords.length > 0) {
