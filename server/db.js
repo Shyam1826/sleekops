@@ -24,7 +24,7 @@ if (isPostgres) {
 
 /**
  * 🚀 Promisified Bridge Export Interface
- * Maps queries cleanly regardless of whether the platform is SQLite or PostgreSQL
+ * Bulletproof array normalization for both SQLite and Cloud PostgreSQL
  */
 module.exports = {
   query: async (sql, params = []) => {
@@ -35,14 +35,26 @@ module.exports = {
       const adjustedSql = sql.replace(/\$(\d+)/g, '?');
       return new Promise((resolve, reject) => {
         dbInstance.all(adjustedSql, params, (err, rows) => {
-          if (err) reject(err);
-          else resolve({ rows: rows || [] });
+          if (err) {
+            reject(err);
+          } else {
+            const data = rows || [];
+            // 🔑 Dual-compatibility mapping pattern:
+            // Acts as a direct array, but also contains a .rows property for Postgres compatibility
+            Object.defineProperty(data, 'rows', {
+              value: data,
+              writable: true,
+              enumerable: false, // Prevents array loop pollution
+              configurable: true
+            });
+            resolve(data);
+          }
         });
       });
     }
   },
   
-  // Legacy wrappers to keep existing SQLite routes functioning perfectly on your laptop
+  // Legacy wrappers updated to maintain consistent object arrays
   run: (sql, params = []) => {
     if (isPostgres) {
       const adjustedSql = sql.replace(/\?/g, (_, index) => `$${index + 1}`);
@@ -51,7 +63,7 @@ module.exports = {
     return new Promise((resolve, reject) => {
       dbInstance.run(sql, params, function (err) {
         if (err) reject(err);
-        else resolve({ lastID: this.lastID, changes: this.changes });
+        else resolve({ lastID: this.lastID, changes: this.changes, rows: [] });
       });
     });
   },
